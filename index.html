@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>ONEX - LIST TO ARRAY CONVERTION</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="list to array convertion, list to php array convertion, list to javascript array convertion, list to any array convertion"/>
+    <meta name="description" content="An easy application for list to array convertion, list to php array convertion, list to javascript array convertion, list to any array convertion"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.16/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        .enter-txtarea {
+            height: 545px !important;
+        }
+        .textarea-min {
+            height: 200px !important;
+        }
+    </style>
+<body>
+
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-12">
+                <h1><strong><i class="fas fa-layer-group text-primary"></i> LIST TO ARRAY CONVERTION</strong></h1>
+                <hr/>
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <b>Enter Your List Here</b>
+                        <button type="button" class="btn btn-primary btn-sm float-end convert-btn"><i class="fas fa-angle-double-right"></i></button>
+                    </div>
+                    <div class="card-body">
+                        <textarea class="form-control enter-txtarea" id="listArea" placeholder="Enter your list..."></textarea>
+                    </div>
+                    <div class="card-footer text-end">
+                        <button type="button" class="btn btn-primary convert-btn">Convert To Array <i class="fas fa-angle-double-right"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header"><b>PHP Array</b><span class="item-count"></span></div>
+                            <div class="card-body">
+                                <textarea class="form-control textarea-min" id="phpArray" placeholder="Will converting into php array..."></textarea>
+                            </div>
+                            <div class="card-footer">
+                                <button type="button" class="btn btn-success copy-btn" data-copy="phpArray"><i class="fas fa-copy"></i> Copy It!</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header"><b>JS Array</b><span class="item-count"></span></div>
+                            <div class="card-body">
+                                <textarea class="form-control textarea-min" id="jsArray" placeholder="Will converting into javascript array..."></textarea>
+                            </div>
+                            <div class="card-footer">
+                                <button type="button" class="btn btn-success copy-btn" data-copy="jsArray"><i class="fas fa-copy"></i> Copy It!</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.16/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.convert-btn').on('click', function() {
+                let list = $('#listArea').val().trim();
+                let tempArr = [];
+                let finalArr = [];
+                if ((list) && list != '') {
+                    tempArr = list.split(/\n/);
+                }
+                if ((tempArr) && tempArr.length > 0) {
+                    tempArr.forEach(function (item) {
+                        item = item.replaceAll(' ', '');
+                        item = item.replace(/\s/g, '').trim();
+                        item = item.replace(/\s+/g, '').trim();
+                        if ((item) && item != '' && item.length) {
+                            finalArr.push(item);
+                        }
+                    });
+                }
+                if (finalArr.length) {
+                    displayLoading();
+                    convertIntoPhpArray(finalArr);
+                    convertIntoJsArray(finalArr);
+                } else {
+                    displayAlert('error', 'Sorry!', 'Please enter your list first');
+                }
+            });
+
+            $('.copy-btn').on('click', function() {
+                let container = $(this).data('copy');
+                if ($('#' + container).val() != '') {
+                    let copyTextElem = document.getElementById(container);
+                    copyTextElem.select();
+                    copyTextElem.setSelectionRange(0, 99999);
+                    navigator.clipboard.writeText(copyTextElem.value);
+                    displayToast();
+                }
+            });
+
+            function convertIntoPhpArray(arr) {
+                let x = [];
+                if (arr.length > 0) {
+                    arr.forEach(function (item) {
+                        x.push(`"${item}",`);
+                    });
+                    let str = x.join('');
+                    str = str.substring(0, str.length - 1);
+                    $('#phpArray').val(`array(${str});`);
+                    $('#phpArray').closest('.card').find('.item-count').text(` - (${arr.length})`);
+                }
+            }
+
+            function convertIntoJsArray(arr) {
+                let x = [];
+                if (arr.length > 0) {
+                    arr.forEach(function (item) {
+                        x.push(`"${item}",`);
+                    });
+                    let str = x.join('');
+                    str = str.substring(0, str.length - 1);
+                    $('#jsArray').val(`[${str}];`);
+                    $('#jsArray').closest('.card').find('.item-count').text(` - (${arr.length})`);
+                }
+            }
+
+            const displayAlert = (icon = 'success', title = '', text = '', confirmButtonText = 'OK') => {
+                Swal.fire({
+                    icon: icon,
+                    title: title,
+                    text: text,
+                    confirmButtonColor: '#0d6efd',
+                    confirmButtonText: confirmButtonText
+                });
+            }
+
+            const displayLoading = (title = 'Please Wait...', text = "System Processing Your Request") => {
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                    timer: 2000,
+                    didOpen: () => {
+                        Swal.showLoading()
+                    }
+                });
+            }
+
+            const displayToast = () => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Its copied!',
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            }
+
+        });
+    </script>
+</body>
+
+</html>
